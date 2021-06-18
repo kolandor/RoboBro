@@ -1,4 +1,6 @@
 #include "DriverControl.h"
+#include "CommandDescriptor.h"
+#include <SoftwareSerial.h>
 
 //direction of rotation of the wheel
 #define FORWARD 1
@@ -7,95 +9,28 @@
 //possibility of engines during the dance (test drive)
 #define DANCE_PWR 150
 
+SoftwareSerial SoftSerial(2, 3); // RX, TX
+
 void setup()
 {
   InitialDriver();
+  Serial.begin(115200);
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  SoftSerial.begin(38400);
 }
 
 void loop()
 {
-  moveBot();
-}
-
-//Sample bot control
-void moveBot() 
-{
-  Ri(500);
-  Zer(100);
-  
-  Le(500);
-  Zer(100);
-  
-  Fo(100);
-  Zer(100);
-  
-  Ba(100);
-  Zer(100);
-
-  Ri(500);
-  Zer(100);
-  
-  Le(500);
-  Zer(100);
-
-  Ri(500);
-  Zer(100);
-  
-  Le(500);
-  Zer(100);
-}
-
-//Robot stop
-void Zer(int delayTime)
-{
-  byte leftState = 0;
-  byte leftPower = 0;
-  byte rightState = 0;
-  byte rightPower = 0;
-  Move(leftState, leftPower, rightState, rightPower);
-  delay(delayTime);
-}
-
-//Robot turn right
-void Ri(int delayTime)
-{
-  byte leftState = FORWARD;
-  byte leftPower = DANCE_PWR;
-  byte rightState = BACKWARD;
-  byte rightPower = DANCE_PWR;
-  Move(leftState, leftPower, rightState, rightPower);
-  delay(delayTime);
-}
-
-//Robot turn left
-void Le(int delayTime)
-{
-  byte leftState = BACKWARD;
-  byte leftPower = DANCE_PWR;
-  byte rightState = FORWARD;
-  byte rightPower = DANCE_PWR;
-  Move(leftState, leftPower, rightState, rightPower);
-  delay(delayTime);
-}
-
-//Robot move forward
-void Fo(int delayTime)
-{
-  byte leftState = FORWARD;
-  byte leftPower = DANCE_PWR;
-  byte rightState = FORWARD;
-  byte rightPower = DANCE_PWR;
-  Move(leftState, leftPower, rightState, rightPower);
-  delay(delayTime);
-}
-
-//Robot move backward
-void Ba(int delayTime)
-{
-  byte leftState = BACKWARD;
-  byte leftPower = DANCE_PWR;
-  byte rightState = BACKWARD;
-  byte rightPower = DANCE_PWR;
-  Move(leftState, leftPower, rightState, rightPower);
-  delay(delayTime);
+  if (SoftSerial.available())
+    Serial.write(SoftSerial.read());
+  if (Serial.available())
+    SoftSerial.write(Serial.read());
+  /*if(comand == COMMAND_ENGINE)
+  {
+    Serial.println("Serial is COMMAND_ENGINE");//Debug
+    digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+    delay(1000);                       // wait
+    digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+  }*/
 }
